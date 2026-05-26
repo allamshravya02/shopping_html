@@ -1,0 +1,1016 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="View and manage your orders at our shopping portal">
+    <meta name="keywords" content="orders, order tracking, shopping, ecommerce">
+    <meta name="author" content="Shopping Portal">
+    <title>Orders - Shopping Portal</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #f8f9fa;
+        }
+
+        header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 1rem 0;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .header-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: bold;
+            text-decoration: none;
+            color: white;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .logo:before {
+            content: "🛍️";
+            font-size: 2rem;
+        }
+
+        nav {
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+        }
+
+        nav a {
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            transition: opacity 0.3s ease;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+        }
+
+        nav a:hover {
+            background-color: rgba(255, 255, 255, 0.2);
+            opacity: 0.9;
+        }
+
+        nav a.active {
+            background-color: rgba(255, 255, 255, 0.3);
+            border-bottom: 2px solid white;
+        }
+
+        .auth-buttons {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .btn-login {
+            background-color: white;
+            color: #667eea;
+            padding: 0.6rem 1.2rem;
+            border-radius: 4px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: transform 0.2s ease;
+        }
+
+        .btn-login:hover {
+            transform: translateY(-2px);
+        }
+
+        .btn-signup {
+            background-color: #764ba2;
+            color: white;
+            padding: 0.6rem 1.2rem;
+            border-radius: 4px;
+            text-decoration: none;
+            font-weight: 600;
+            border: 2px solid white;
+            transition: background-color 0.3s ease;
+        }
+
+        .btn-signup:hover {
+            background-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .page-banner {
+            background: linear-gradient(rgba(102, 126, 234, 0.8), rgba(118, 75, 162, 0.8)), url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 200"><rect fill="%23667eea" width="1200" height="200"/></svg>');
+            background-size: cover;
+            background-position: center;
+            color: white;
+            padding: 4rem 2rem;
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .page-banner h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .page-banner p {
+            font-size: 1.1rem;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+        }
+
+        main {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .section-title {
+            font-size: 2rem;
+            margin-bottom: 2rem;
+            color: #667eea;
+            text-align: center;
+            position: relative;
+            padding-bottom: 1rem;
+        }
+
+        .section-title:after {
+            content: "";
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 3px;
+            background-color: #764ba2;
+            border-radius: 2px;
+        }
+
+        .filters-container {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .status-filter {
+            padding: 0.6rem 1.2rem;
+            border: 2px solid #667eea;
+            background-color: white;
+            color: #667eea;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .status-filter:hover,
+        .status-filter.active {
+            background-color: #667eea;
+            color: white;
+        }
+
+        .orders-container {
+            display: grid;
+            gap: 1.5rem;
+            margin-bottom: 3rem;
+        }
+
+        .order-card {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .order-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+        }
+
+        .order-header {
+            background-color: #f8f9fa;
+            padding: 1.5rem;
+            border-bottom: 2px solid #e8e8e8;
+            display: grid;
+            grid-template-columns: auto 1fr auto auto;
+            gap: 2rem;
+            align-items: center;
+        }
+
+        .order-number {
+            font-size: 0.95rem;
+            color: #666;
+        }
+
+        .order-number strong {
+            font-size: 1.2rem;
+            color: #333;
+            display: block;
+            margin-top: 0.3rem;
+        }
+
+        .order-info {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+        }
+
+        .info-item {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .info-label {
+            font-size: 0.85rem;
+            color: #999;
+            text-transform: uppercase;
+            font-weight: 600;
+            margin-bottom: 0.3rem;
+        }
+
+        .info-value {
+            font-size: 1rem;
+            color: #333;
+            font-weight: 500;
+        }
+
+        .order-status {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 0.5rem;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 0.6rem 1.2rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .status-pending {
+            background-color: #fff3cd;
+            color: #856404;
+        }
+
+        .status-processing {
+            background-color: #d1ecf1;
+            color: #0c5460;
+        }
+
+        .status-shipped {
+            background-color: #cfe2ff;
+            color: #084298;
+        }
+
+        .status-delivered {
+            background-color: #d1e7dd;
+            color: #0f5132;
+        }
+
+        .status-cancelled {
+            background-color: #f8d7da;
+            color: #842029;
+        }
+
+        .order-body {
+            padding: 1.5rem;
+        }
+
+        .order-items {
+            margin-bottom: 1.5rem;
+        }
+
+        .order-items h4 {
+            color: #667eea;
+            margin-bottom: 1rem;
+            font-size: 1rem;
+        }
+
+        .item-list {
+            list-style: none;
+            display: grid;
+            gap: 1rem;
+        }
+
+        .item-list li {
+            padding: 1rem;
+            background-color: #f8f9fa;
+            border-radius: 6px;
+            display: grid;
+            grid-template-columns: auto 1fr auto;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .item-image {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            color: white;
+        }
+
+        .item-details h5 {
+            color: #333;
+            margin-bottom: 0.3rem;
+        }
+
+        .item-details p {
+            color: #999;
+            font-size: 0.9rem;
+        }
+
+        .item-price {
+            text-align: right;
+            font-weight: 600;
+            color: #667eea;
+        }
+
+        .order-summary {
+            background-color: #f8f9fa;
+            padding: 1rem;
+            border-radius: 6px;
+            margin-top: 1rem;
+        }
+
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.5rem 0;
+            border-bottom: 1px solid #e8e8e8;
+        }
+
+        .summary-row:last-child {
+            border-bottom: none;
+            padding-top: 0.5rem;
+            font-weight: 600;
+            font-size: 1.1rem;
+            color: #667eea;
+        }
+
+        .order-actions {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1.5rem;
+            justify-content: flex-end;
+        }
+
+        .btn-action {
+            padding: 0.7rem 1.5rem;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            font-size: 0.95rem;
+        }
+
+        .btn-view-details {
+            background-color: #667eea;
+            color: white;
+        }
+
+        .btn-view-details:hover {
+            background-color: #764ba2;
+        }
+
+        .btn-reorder {
+            background-color: #e8e8e8;
+            color: #333;
+        }
+
+        .btn-reorder:hover {
+            background-color: #d8d8d8;
+        }
+
+        .btn-return {
+            background-color: #f8d7da;
+            color: #842029;
+        }
+
+        .btn-return:hover {
+            background-color: #f5c2c7;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 4rem 2rem;
+            background-color: white;
+            border-radius: 8px;
+        }
+
+        .empty-state-icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+        }
+
+        .empty-state h3 {
+            color: #667eea;
+            margin-bottom: 1rem;
+            font-size: 1.5rem;
+        }
+
+        .empty-state p {
+            color: #666;
+            margin-bottom: 2rem;
+        }
+
+        .empty-state a {
+            display: inline-block;
+            background-color: #667eea;
+            color: white;
+            padding: 0.7rem 2rem;
+            border-radius: 4px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: background-color 0.3s ease;
+        }
+
+        .empty-state a:hover {
+            background-color: #764ba2;
+        }
+
+        footer {
+            background-color: #2c3e50;
+            color: white;
+            padding: 3rem 2rem;
+            margin-top: 3rem;
+        }
+
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .footer-section h3 {
+            margin-bottom: 1rem;
+            color: #667eea;
+        }
+
+        .footer-section ul {
+            list-style: none;
+        }
+
+        .footer-section ul li {
+            margin-bottom: 0.8rem;
+        }
+
+        .footer-section a {
+            color: #bbb;
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .footer-section a:hover {
+            color: #667eea;
+        }
+
+        .footer-bottom {
+            border-top: 1px solid #444;
+            padding-top: 2rem;
+            text-align: center;
+            color: #999;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .newsletter {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+
+        .newsletter input {
+            flex: 1;
+            padding: 0.6rem 1rem;
+            border: none;
+            border-radius: 4px;
+            font-size: 1rem;
+        }
+
+        .newsletter button {
+            padding: 0.6rem 1.2rem;
+            background-color: #667eea;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: background-color 0.3s ease;
+        }
+
+        .newsletter button:hover {
+            background-color: #764ba2;
+        }
+
+        @media (max-width: 768px) {
+            .header-container {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            nav {
+                gap: 1rem;
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+
+            .page-banner h1 {
+                font-size: 1.8rem;
+            }
+
+            .order-header {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+
+            .order-info {
+                grid-template-columns: 1fr;
+            }
+
+            .order-status {
+                align-items: flex-start;
+            }
+
+            .item-list li {
+                grid-template-columns: 1fr;
+            }
+
+            .item-image {
+                width: 40px;
+                height: 40px;
+                font-size: 1.2rem;
+            }
+
+            .order-actions {
+                flex-direction: column;
+            }
+
+            .btn-action {
+                width: 100%;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-container">
+            <a href="#" class="logo">Shopping Portal</a>
+            <nav>
+                <a href="products.html">Home</a>
+                <a href="#about">About</a>
+                <a href="orders.html" class="active">Orders</a>
+                <a href="#contact">Contact</a>
+                <div class="auth-buttons">
+                    <a href="#login" class="btn-login">Login</a>
+                    <a href="#signup" class="btn-signup">Sign Up</a>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <section class="page-banner">
+        <h1>Your Orders</h1>
+        <p>Track and manage your purchases</p>
+    </section>
+
+    <main>
+        <section>
+            <h2 class="section-title">Order History</h2>
+
+            <div class="filters-container">
+                <button class="status-filter active" data-status="all">All Orders</button>
+                <button class="status-filter" data-status="pending">Pending</button>
+                <button class="status-filter" data-status="processing">Processing</button>
+                <button class="status-filter" data-status="shipped">Shipped</button>
+                <button class="status-filter" data-status="delivered">Delivered</button>
+            </div>
+
+            <div class="orders-container">
+                <!-- Order 1 -->
+                <article class="order-card" data-status="delivered">
+                    <div class="order-header">
+                        <div class="order-number">
+                            Order ID
+                            <strong>#ORD-2026-001245</strong>
+                        </div>
+                        <div class="order-info">
+                            <div class="info-item">
+                                <span class="info-label">Order Date</span>
+                                <span class="info-value">May 20, 2026</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">Total Amount</span>
+                                <span class="info-value">$459.97</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">Items</span>
+                                <span class="info-value">2 Items</span>
+                            </div>
+                        </div>
+                        <div class="order-status">
+                            <span class="status-badge status-delivered">Delivered</span>
+                            <small style="color: #999;">Delivered on May 25</small>
+                        </div>
+                    </div>
+                    <div class="order-body">
+                        <div class="order-items">
+                            <h4>📦 Order Items</h4>
+                            <ul class="item-list">
+                                <li>
+                                    <div class="item-image">💻</div>
+                                    <div class="item-details">
+                                        <h5>Laptop Computer</h5>
+                                        <p>Qty: 1 | SKU: LAP-001-BK</p>
+                                    </div>
+                                    <div class="item-price">$899.99</div>
+                                </li>
+                                <li>
+                                    <div class="item-image">🎧</div>
+                                    <div class="item-details">
+                                        <h5>Gaming Headset</h5>
+                                        <p>Qty: 1 | SKU: HEAD-002-RD</p>
+                                    </div>
+                                    <div class="item-price">$149.99</div>
+                                </li>
+                            </ul>
+                        </div>
+
+                        <div class="order-summary">
+                            <div class="summary-row">
+                                <span>Subtotal:</span>
+                                <span>$1,049.98</span>
+                            </div>
+                            <div class="summary-row">
+                                <span>Shipping:</span>
+                                <span>-$10.00 (Free Shipping)</span>
+                            </div>
+                            <div class="summary-row">
+                                <span>Tax:</span>
+                                <span>$45.99</span>
+                            </div>
+                            <div class="summary-row">
+                                <span>Discount:</span>
+                                <span>-$625.00</span>
+                            </div>
+                            <div class="summary-row">
+                                <span>Total:</span>
+                                <span>$459.97</span>
+                            </div>
+                        </div>
+
+                        <div class="order-actions">
+                            <button class="btn-action btn-view-details">View Details</button>
+                            <button class="btn-action btn-reorder">Reorder</button>
+                        </div>
+                    </div>
+                </article>
+
+                <!-- Order 2 -->
+                <article class="order-card" data-status="shipped">
+                    <div class="order-header">
+                        <div class="order-number">
+                            Order ID
+                            <strong>#ORD-2026-001234</strong>
+                        </div>
+                        <div class="order-info">
+                            <div class="info-item">
+                                <span class="info-label">Order Date</span>
+                                <span class="info-value">May 18, 2026</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">Total Amount</span>
+                                <span class="info-value">$399.99</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">Items</span>
+                                <span class="info-value">1 Item</span>
+                            </div>
+                        </div>
+                        <div class="order-status">
+                            <span class="status-badge status-shipped">Shipped</span>
+                            <small style="color: #999;">Tracking: UPS-2026-5678</small>
+                        </div>
+                    </div>
+                    <div class="order-body">
+                        <div class="order-items">
+                            <h4>📦 Order Items</h4>
+                            <ul class="item-list">
+                                <li>
+                                    <div class="item-image">📱</div>
+                                    <div class="item-details">
+                                        <h5>Smartphone</h5>
+                                        <p>Qty: 1 | SKU: PHONE-003-SV</p>
+                                    </div>
+                                    <div class="item-price">$599.99</div>
+                                </li>
+                            </ul>
+                        </div>
+
+                        <div class="order-summary">
+                            <div class="summary-row">
+                                <span>Subtotal:</span>
+                                <span>$599.99</span>
+                            </div>
+                            <div class="summary-row">
+                                <span>Shipping:</span>
+                                <span>Free</span>
+                            </div>
+                            <div class="summary-row">
+                                <span>Tax:</span>
+                                <span>$0.00</span>
+                            </div>
+                            <div class="summary-row">
+                                <span>Total:</span>
+                                <span>$599.99</span>
+                            </div>
+                        </div>
+
+                        <div class="order-actions">
+                            <button class="btn-action btn-view-details">View Details</button>
+                            <button class="btn-action btn-return">Return Item</button>
+                        </div>
+                    </div>
+                </article>
+
+                <!-- Order 3 -->
+                <article class="order-card" data-status="processing">
+                    <div class="order-header">
+                        <div class="order-number">
+                            Order ID
+                            <strong>#ORD-2026-001233</strong>
+                        </div>
+                        <div class="order-info">
+                            <div class="info-item">
+                                <span class="info-label">Order Date</span>
+                                <span class="info-value">May 23, 2026</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">Total Amount</span>
+                                <span class="info-value">$189.97</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">Items</span>
+                                <span class="info-value">3 Items</span>
+                            </div>
+                        </div>
+                        <div class="order-status">
+                            <span class="status-badge status-processing">Processing</span>
+                            <small style="color: #999;">Being prepared for shipment</small>
+                        </div>
+                    </div>
+                    <div class="order-body">
+                        <div class="order-items">
+                            <h4>📦 Order Items</h4>
+                            <ul class="item-list">
+                                <li>
+                                    <div class="item-image">👕</div>
+                                    <div class="item-details">
+                                        <h5>Premium T-Shirt</h5>
+                                        <p>Qty: 2 | SKU: SHIRT-004-BL</p>
+                                    </div>
+                                    <div class="item-price">$59.98</div>
+                                </li>
+                                <li>
+                                    <div class="item-image">👟</div>
+                                    <div class="item-details">
+                                        <h5>Running Shoes</h5>
+                                        <p>Qty: 1 | SKU: SHOE-005-RD</p>
+                                    </div>
+                                    <div class="item-price">$89.99</div>
+                                </li>
+                            </ul>
+                        </div>
+
+                        <div class="order-summary">
+                            <div class="summary-row">
+                                <span>Subtotal:</span>
+                                <span>$149.97</span>
+                            </div>
+                            <div class="summary-row">
+                                <span>Shipping:</span>
+                                <span>$10.00</span>
+                            </div>
+                            <div class="summary-row">
+                                <span>Tax:</span>
+                                <span>$30.00</span>
+                            </div>
+                            <div class="summary-row">
+                                <span>Total:</span>
+                                <span>$189.97</span>
+                            </div>
+                        </div>
+
+                        <div class="order-actions">
+                            <button class="btn-action btn-view-details">View Details</button>
+                            <button class="btn-action btn-reorder">Reorder</button>
+                        </div>
+                    </div>
+                </article>
+
+                <!-- Order 4 -->
+                <article class="order-card" data-status="pending">
+                    <div class="order-header">
+                        <div class="order-number">
+                            Order ID
+                            <strong>#ORD-2026-001232</strong>
+                        </div>
+                        <div class="order-info">
+                            <div class="info-item">
+                                <span class="info-label">Order Date</span>
+                                <span class="info-value">May 26, 2026</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">Total Amount</span>
+                                <span class="info-value">$349.96</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">Items</span>
+                                <span class="info-value">2 Items</span>
+                            </div>
+                        </div>
+                        <div class="order-status">
+                            <span class="status-badge status-pending">Pending</span>
+                            <small style="color: #999;">Waiting for payment confirmation</small>
+                        </div>
+                    </div>
+                    <div class="order-body">
+                        <div class="order-items">
+                            <h4>📦 Order Items</h4>
+                            <ul class="item-list">
+                                <li>
+                                    <div class="item-image">⌚</div>
+                                    <div class="item-details">
+                                        <h5>Smart Watch</h5>
+                                        <p>Qty: 1 | SKU: WATCH-006-BK</p>
+                                    </div>
+                                    <div class="item-price">$249.99</div>
+                                </li>
+                                <li>
+                                    <div class="item-image">🏠</div>
+                                    <div class="item-details">
+                                        <h5>Smart Home Device</h5>
+                                        <p>Qty: 1 | SKU: HOME-007-WH</p>
+                                    </div>
+                                    <div class="item-price">$79.99</div>
+                                </li>
+                            </ul>
+                        </div>
+
+                        <div class="order-summary">
+                            <div class="summary-row">
+                                <span>Subtotal:</span>
+                                <span>$329.98</span>
+                            </div>
+                            <div class="summary-row">
+                                <span>Shipping:</span>
+                                <span>Free</span>
+                            </div>
+                            <div class="summary-row">
+                                <span>Tax:</span>
+                                <span>$19.98</span>
+                            </div>
+                            <div class="summary-row">
+                                <span>Total:</span>
+                                <span>$349.96</span>
+                            </div>
+                        </div>
+
+                        <div class="order-actions">
+                            <button class="btn-action btn-view-details">View Details</button>
+                            <button class="btn-action btn-reorder">Reorder</button>
+                        </div>
+                    </div>
+                </article>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="footer-content">
+            <section class="footer-section">
+                <h3>About Us</h3>
+                <p>We are a leading online shopping portal providing quality products at the best prices. Our mission is to make shopping convenient and affordable for everyone.</p>
+            </section>
+
+            <section class="footer-section">
+                <h3>Quick Links</h3>
+                <ul>
+                    <li><a href="products.html" title="Go to products">Home</a></li>
+                    <li><a href="#about" title="About our company">About</a></li>
+                    <li><a href="orders.html" title="View your orders">Orders</a></li>
+                    <li><a href="#contact" title="Contact us">Contact</a></li>
+                    <li><a href="#" title="Read our blog">Blog</a></li>
+                </ul>
+            </section>
+
+            <section class="footer-section">
+                <h3>Support</h3>
+                <ul>
+                    <li><a href="#" title="Get help">Help Center</a></li>
+                    <li><a href="#" title="Return a product">Returns</a></li>
+                    <li><a href="#" title="Track your order">Track Order</a></li>
+                    <li><a href="#" title="Read our policies">Policies</a></li>
+                    <li><a href="#" title="Report an issue">Report Issue</a></li>
+                </ul>
+            </section>
+
+            <section class="footer-section">
+                <h3>Newsletter</h3>
+                <p>Subscribe to get special offers and updates</p>
+                <form class="newsletter" method="POST" action="#">
+                    <input type="email" placeholder="Your email address" required aria-label="Email address">
+                    <button type="submit">Subscribe</button>
+                </form>
+            </section>
+        </div>
+
+        <div class="footer-bottom">
+            <p>&copy; 2026 Shopping Portal. All rights reserved. | <a href="#">Privacy Policy</a> | <a href="#">Terms of Service</a></p>
+        </div>
+    </footer>
+
+    <script>
+        // Status filter functionality
+        const filterButtons = document.querySelectorAll('.status-filter');
+        const orderCards = document.querySelectorAll('.order-card');
+
+        filterButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                const status = this.getAttribute('data-status');
+
+                // Update active button
+                filterButtons.forEach(btn => btn.classList.remove('active'));
+                this.classList.add('active');
+
+                // Filter orders
+                orderCards.forEach(card => {
+                    if (status === 'all' || card.getAttribute('data-status') === status) {
+                        card.style.display = 'block';
+                    } else {
+                        card.style.display = 'none';
+                    }
+                });
+            });
+        });
+
+        // View details button functionality
+        const viewDetailButtons = document.querySelectorAll('.btn-view-details');
+        viewDetailButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                const orderCard = this.closest('.order-card');
+                const orderId = orderCard.querySelector('.order-number strong').textContent;
+                alert(`Viewing details for ${orderId}`);
+            });
+        });
+
+        // Reorder button functionality
+        const reorderButtons = document.querySelectorAll('.btn-reorder');
+        reorderButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                alert('Items added to your cart!');
+            });
+        });
+
+        // Return item button functionality
+        const returnButtons = document.querySelectorAll('.btn-return');
+        returnButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                alert('Initiating return process...');
+            });
+        });
+    </script>
+</body>
+</html>
